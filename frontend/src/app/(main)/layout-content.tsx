@@ -88,11 +88,9 @@ export default function LayoutContent({
                     "min-w-[50px] transition-all duration-300 ease-in-out"
                 )}
               >
-              <div className="px-4 pt-2 pb-3">
-                <AccountDropdownMenu session={session}></AccountDropdownMenu>
-              </div>
               <Nav
                 isCollapsed={isCollapsed}
+                session={session}
                 links={[
                 ]}
               />

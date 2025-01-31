@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogIn } from "lucide-react";
+import { LoginDialog } from "@/components/loginDialog";
 
 type Props = {
   session: Session | null;
@@ -30,18 +30,15 @@ export default function AccountDropdownMenu(props: Props) {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="relative h-8 w-8 rounded-full mr-[10px]"
-              style={{ marginTop: "10px" }}
+              className="h-9 w-9 rounded-full p-0"
             >
-              <div>
-                <Avatar className="h-[36px] w-[36px]">
-                  <AvatarImage src={`${session.user.image}`} />
-                  <AvatarFallback>{session.user.name}</AvatarFallback>
-                </Avatar>
-              </div>
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={`${session.user.image}`} />
+                <AvatarFallback>{session.user.name}</AvatarFallback>
+              </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount side="right">
+          <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">
@@ -62,9 +59,7 @@ export default function AccountDropdownMenu(props: Props) {
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Button onClick={() => signIn("github-custom", { callbackUrl: pathname })} className="w-[36px] h-[36px] p-0">
-          <LogIn size={14} />
-        </Button>
+        <LoginDialog className="h-9 w-9 p-0" />
       )}
     </>
   );

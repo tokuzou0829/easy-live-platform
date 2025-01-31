@@ -11,8 +11,12 @@ import {
 } from "@/components/ui/tooltip";
 import { NewStreamDialog } from "./new-stream-dialog";
 import { Home } from "lucide-react";
+import AccountDropdownMenu from "./menu";
+import { Session } from "next-auth";
+
 interface NavProps {
   isCollapsed: boolean;
+  session: Session | null;
   links: {
     title: string;
     label?: string;
@@ -22,12 +26,18 @@ interface NavProps {
   }[];
 }
 
-export function Nav({ links, isCollapsed }: NavProps) {
+export function Nav({ links, isCollapsed, session }: NavProps) {
   return (
     <div
       data-collapsed={isCollapsed}
       className="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2"
     >
+      <div className={cn(
+        "px-2",
+        isCollapsed ? "flex justify-center" : ""
+      )}>
+        <AccountDropdownMenu session={session} />
+      </div>
       <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
         <Link
           href="/"
