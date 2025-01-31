@@ -33,7 +33,7 @@ export default function AccountDropdownMenu(props: Props) {
               className="h-9 w-9 rounded-full p-0"
             >
               <Avatar className="h-8 w-8">
-                <AvatarImage src={`${session.user.image}`} />
+                <AvatarImage src={`${session.user.image}`} alt="profile" />
                 <AvatarFallback>{session.user.name}</AvatarFallback>
               </Avatar>
             </Button>

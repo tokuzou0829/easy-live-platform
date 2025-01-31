@@ -1,0 +1,17 @@
+name: Setup Node
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v2
+      with:
+        cwd: ${{github.action_path}}
+        version: 8
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .node-version
+        cache: pnpm
+        cache-dependency-path: ./frontend/pnpm-lock.yaml
+    - run: cp ./frontend/.env.example ./frontend/.env
+      shell: bash 
+    - run: cd ./frontend && pnpm install
+      shell: bash 

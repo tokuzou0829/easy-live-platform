@@ -11,7 +11,7 @@ import { Nav } from "@/app/(main)/nav";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { usePathname } from 'next/navigation';
 import { Session } from "next-auth";
-import AccountDropdownMenu from "./menu";
+
 export default function LayoutContent({
   children,
   session

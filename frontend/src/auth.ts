@@ -1,6 +1,21 @@
-import NextAuth, { type DefaultSession } from "next-auth";
+import NextAuth, { type DefaultSession, NextAuthConfig } from "next-auth";
 import { OAuthConfig } from "next-auth/providers";
 import { JWT } from "next-auth/jwt";
+
+export const configForTest = {
+  jwt: {
+    encode: async ({ token }) => {
+      return btoa(JSON.stringify(token));
+    },
+    decode: async ({ token }) => {
+      if (!token) {
+        return {};
+      }
+
+      return JSON.parse(atob(token));
+    },
+  },
+} satisfies Omit<NextAuthConfig, "providers">;
 
 // Github OAuthとバックエンド側認証を行うための設定
 const CustomOAuthProvider = {
@@ -38,7 +53,6 @@ const CustomOAuthProvider = {
   clientId: process.env.AUTH_GITHUB_ID,
   clientSecret: process.env.AUTH_GITHUB_SECRET,
   profile(profile,token) {
-    console.log('token', token)
     return {
       id: profile.id,
       name: profile?.name,
@@ -74,7 +88,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session
     },
   },
-});
+  ...(process.env.NEXTAUTH_TEST_MODE === "true" ? configForTest : {}),
+}
+);
 
 declare module "next-auth" {
   interface Session {

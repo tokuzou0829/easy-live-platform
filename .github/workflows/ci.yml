@@ -1,0 +1,32 @@
+name: ci
+defaults:
+  run:
+    working-directory: frontend
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - frontend/package.json
+      - frontend/src/**
+      - frontend/e2e/**
+      - .github/workflows/ci.yml
+  push:
+    branches:
+      - main
+    paths:
+      - frontend/package.json
+      - frontend/src/**
+      - frontend/e2e/**
+      - .github/workflows/ci.yml
+jobs:
+  # start: e2e #
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node
+      - run: pnpm exec playwright install chromium
+      - run: pnpm build:test
+      - run: pnpm test:e2e
+  # end: e2e #
