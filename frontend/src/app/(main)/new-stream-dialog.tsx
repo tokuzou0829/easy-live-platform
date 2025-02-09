@@ -1,19 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Radio } from "lucide-react";
+import { ExternalLinkIcon, Radio } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import Link from "next/link";
 
 interface StreamResponse {
   id: number;
@@ -29,6 +32,7 @@ export function NewStreamDialog({ isCollapsed }: { isCollapsed: boolean }) {
   const [overview, setOverview] = useState("");
   const [streamData, setStreamData] = useState<StreamResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,11 +49,23 @@ export function NewStreamDialog({ isCollapsed }: { isCollapsed: boolean }) {
 
       const data = await response.json();
       setStreamData(data);
+      localStorage.setItem("stream_key", data.stream_key);
+      localStorage.setItem("stream_access_key", data.stream_access_key);
     } catch (error) {
       console.error("Error creating stream:", error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleBrowserEncoder = () => {
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmedNavigation = () => {
+    setShowConfirmation(false);
+    setOpen(false);
+    window.open(`/browser-encoder?stream_key=${streamData?.stream_key}`, '_blank');
   };
 
   return (
@@ -116,10 +132,43 @@ export function NewStreamDialog({ isCollapsed }: { isCollapsed: boolean }) {
                 </code>
                 <span className="text-gray-500">OBSなどのお好きなアプリから配信を開始できます</span>
               </div>
-              <Button onClick={() => setOpen(false)}>閉じる</Button>
+              <Link href="#" onClick={(e) => {
+                e.preventDefault();
+                handleBrowserEncoder();
+              }}>
+                <Button>
+                  ブラウザから配信を始める
+                  <ExternalLinkIcon className="h-4 w-4 ml-2" />
+                </Button>
+              </Link>
             </div>
           </>
         )}
+      </DialogContent>
+    </Dialog>
+
+    <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>ブラウザ配信(β)に関する注意</DialogTitle>
+          <DialogDescription>
+            ブラウザからの配信は実験的な機能で、以下の制限があります：
+            <ul className="list-disc pl-6 mt-2">
+              <li>配信が不安定になる可能性があります</li>
+              <li>画質や音質が低下する可能性があります</li>
+              <li>もし配信がすぐにホームに表示されない、配信の画質があまりにも低い場合は一度配信を停止して開始ボタンを押して配信をやり直してください</li>
+            </ul>
+            安定した配信には、OBSなどの専用ソフトウェアの使用を推奨します。
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setShowConfirmation(false)}>
+            キャンセル
+          </Button>
+          <Button onClick={handleConfirmedNavigation}>
+            理解して続ける
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
     </>

@@ -23,7 +23,7 @@ export function LoginDialog({ className }: LoginDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" className={className}>
+        <Button variant="ghost" className={className} title="Login">
           <LogIn className="h-4 w-4" />
         </Button>
       </DialogTrigger>

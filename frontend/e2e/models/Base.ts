@@ -12,7 +12,7 @@ export class Base {
   }
 
   async signIn() {
-    await this.page.getByRole('button').filter({ hasText: /^$/ }).click();
+    await this.page.getByRole('button', { name: 'Login' }).click();
     const signInButton = this.page.getByRole('button', { name: 'Githubでログイン' });
     await expect(signInButton).toBeVisible();
     return signInButton;

@@ -1,0 +1,13 @@
+"use server";
+import BrowserEncoder from "./browserEncoder";
+import { getLive } from "@/requests/live";
+export default async function EncoderLayout({ searchParams }: { searchParams: { stream_key: string } }) {
+    const stream = await getLive({ id: searchParams.stream_key });
+
+    return (
+      <>
+        <BrowserEncoder streamTitle={stream.title} />
+      </>
+    );
+  }
+  

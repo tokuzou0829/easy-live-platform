@@ -1,5 +1,5 @@
 import Video from "./videoframe";
-import Chat from "./chat";
+import Chat from "@/components/chat";
 import { auth } from "@/auth";
 import LiveOverview from "./liveOverview";
 import { getLive } from "@/requests/live";
