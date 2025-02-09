@@ -1471,452 +1471,452 @@ const toggleCropping = (sourceId: string) => {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Browser Encoder</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex gap-4 items-center">
-            <h1 className='flex-1 text-xl'>配信：{streamTitle}</h1>
-            <RadioGroup
-              defaultValue={resolution}
-              onValueChange={(value) => handleResolutionChange(value as '720p' | '1080p')}
-              className="flex items-center space-x-4"
-              disabled={isStreaming} // RadioGroup全体を無効化
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem 
-                  value="720p" 
-                  id="720p"
-                  disabled={isStreaming} // 個別のアイテムも無効化
-                />
-                <Label 
-                  htmlFor="720p" 
-                  className={isStreaming ? "text-muted-foreground" : ""} // 配信中は文字色を薄くする
-                >
-                  720p
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem 
-                  value="1080p" 
-                  id="1080p"
-                  disabled={isStreaming}
-                />
-                <Label 
-                  htmlFor="1080p"
-                  className={isStreaming ? "text-muted-foreground" : ""}
-                >
-                  1080p
-                </Label>
-              </div>
-            </RadioGroup>
-            {!isStreaming ? (
-              <Button onClick={startStreaming} disabled={isStreaming}>
-                配信開始
-              </Button>
-            ) : (
-              <Button 
-                onClick={stopStreaming} 
-                disabled={!isStreaming}
-                variant="destructive"
-              >
-                配信停止
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-[50%_1fr] gap-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Sources</CardTitle>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      <Video className="h-4 w-4 mr-2" />
-                      <span>カメラを追加</span>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuPortal>
-                      <DropdownMenuSubContent>
-                        {devices.videoInputs.map(device => (
-                          <DropdownMenuItem 
-                            key={device.deviceId}
-                            onSelect={() => addVideoSource('camera', device.deviceId)}
-                          >
-                            {device.label || `Camera ${device.deviceId}`}
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuSubContent>
-                    </DropdownMenuPortal>
-                  </DropdownMenuSub>
-
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      <Mic className="h-4 w-4 mr-2" />
-                      <span>マイクを追加</span>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuPortal>
-                      <DropdownMenuSubContent>
-                        {devices.audioInputs.map(device => (
-                          <DropdownMenuItem 
-                            key={device.deviceId}
-                            onSelect={() => addAudioOnlySource(device.deviceId)}
-                          >
-                            {device.label || `Microphone ${device.deviceId}`}
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuSubContent>
-                    </DropdownMenuPortal>
-                  </DropdownMenuSub>
-
-                  <DropdownMenuItem asChild>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <div className="flex items-center px-2 py-1.5 text-sm">
-                          <Monitor className="h-4 w-4 mr-2" />
-                          <span>画面を追加</span>
-                        </div>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>画面共有の設定</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                            <div className="flex items-center justify-between">
-                            <label className="text-sm font-medium">
-                              元のアスペクト比を維持
-                            </label>
-                            <Switch
-                              checked={screenShareSettings.maintainAspectRatio}
-                              onCheckedChange={(checked: boolean) => 
-                              setScreenShareSettings((prev: ScreenShareSettings) => ({
-                                ...prev,
-                                maintainAspectRatio: checked
-                              }))
-                              }
-                            />
-                            </div>
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium">解像度</label>
-                            <RadioGroup
-                              value={screenShareSettings.resolution}
-                              onValueChange={(value: '720p' | '1080p') =>
-                                setScreenShareSettings(prev => ({
-                                  ...prev,
-                                  resolution: value
-                                }))
-                              }
-                              className="flex items-center space-x-4"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="720p" id="screenshare-720p" />
-                                <Label htmlFor="screenshare-720p">720p</Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="1080p" id="screenshare-1080p" />
-                                <Label htmlFor="screenshare-1080p">1080p</Label>
-                              </div>
-                            </RadioGroup>
-                          </div>
-                          <DialogClose asChild>
-                            <Button 
-                              className="w-full" 
-                              onClick={() => {
-                                addVideoSource('screen');
-                              }}
-                            >
-                              画面共有を開始
-                            </Button>
-                          </DialogClose>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem onSelect={addImageSource}>
-                    <ImageIcon className="h-4 w-4 mr-2" />
-                    <span>画像を追加</span>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem onSelect={addAudioFileSource}>
-                    <Music className="h-4 w-4 mr-2" />
-                    <span>音声ファイルを追加</span>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem onSelect={addVideoFile}>
-                    <Video className="h-4 w-4 mr-2" />
-                    <span>動画ファイルを追加</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[200px]">
-                {/* 映像ソース */}
-                {videoSources
-                  .map((source, index) => (
-                    <div 
-                      key={source.id} 
-                      className={`flex items-center justify-between p-2 rounded-lg mb-2 ${
-                        source.id === selectedSourceId ? 'bg-accent' : 'bg-card'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        {source.id.startsWith('camera-') && <Video className="h-4 w-4" />}
-                        {source.id.startsWith('screen-') && <Monitor className="h-4 w-4" />}
-                        {source.id.startsWith('image-') && <ImageIcon className="h-4 w-4" />}
-                        {source.id.startsWith('video-') && <Video className="h-4 w-4" />}
-                        {editingName === source.id ? (
-                          <Input
-                            className="h-6 w-40"
-                            value={source.name}
-                            autoFocus
-                            onChange={(e) => renameSource(source.id, e.target.value)}
-                            onBlur={() => setEditingName(null)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                setEditingName(null);
-                              }
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        ) : (
-                          <span 
-                            className="cursor-pointer hover:bg-accent/50 px-2 py-1 rounded min-w-[160px]"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditingName(source.id);
-                            }}
-                          >
-                            {source.name}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex gap-2">
-                        {(source.id.startsWith('video-') || source.isAnimated) && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => toggleVideoLoop(source.id)}
-                          >
-                            {source.loop ? 'Loop: On' : 'Loop: Off'}
-                          </Button>
-                        )}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleCropping(source.id)}
-                        >
-                          <Scissors className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => moveSourceLayer(source.id, 'up')}
-                          disabled={index === 0} // インデックスで直接判定
-                        >
-                          ↑
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => moveSourceLayer(source.id, 'down')}
-                          disabled={index === videoSources.length - 1} // インデックスで直接判定
-                        >
-                          ↓
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="destructive"
-                          onClick={() => removeSource(source.id)}
-                        >
-                          ×
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-
-                {/* 音声ソース */}
-                {Object.entries(audioSources)
-                  .filter(([id]) => !id.startsWith('screen-')) // 画面共有の音声は除外
-                  .map(([sourceId, source]) => (
-                    <div 
-                      key={sourceId}
-                      className="flex items-center justify-between p-2 rounded-lg mb-2 bg-card"
-                    >
-                      <div className="flex items-center gap-2">
-                        {source.type === 'mic' && <Mic className="h-4 w-4" />}
-                        {source.type === 'audio' && <Music className="h-4 w-4" />}
-                        {editingName === sourceId ? (
-                          <Input
-                            className="h-6 w-40"
-                            value={source.name}
-                            autoFocus
-                            onChange={(e) => renameSource(sourceId, e.target.value)}
-                            onBlur={() => setEditingName(null)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                setEditingName(null);
-                              }
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        ) : (
-                          <span 
-                            className="cursor-pointer hover:bg-accent/50 px-2 py-1 rounded min-w-[160px]"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditingName(sourceId);
-                            }}
-                          >
-                            {source.name}
-                          </span>
-                        )}
-                      </div>
-                      <Button
-                        size="icon"
-                        variant="destructive"
-                        onClick={() => removeSource(sourceId)}
-                      >
-                        ×
-                      </Button>
-                    </div>
-                  ))}
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            </CardContent>
-          </Card>
-
-          <Card>
+    <div className="h-full flex flex-col">
+      <div className="grid grid-cols-1 md:grid-cols-[30%_1fr] flex-1">
+        <div className="flex flex-col h-full">
+          <Card >
             <CardHeader>
-              <CardTitle>Audio Mixer</CardTitle>
+              <CardTitle>{streamTitle}</CardTitle>
             </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[200px]">
-                {Object.entries(audioSources).map(([sourceId, { volume, muted, loop, level }]) => (
-                  <div key={sourceId} className="space-y-2 mb-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">
-                        {audioSources[sourceId].name}
-                      </span>
-                      <div className="flex gap-2">
-                        {sourceId.startsWith('audio-') && (
-                          <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => toggleLoop(sourceId)}
-                            >
-                              {loop ? 'Loop: On' : 'Loop: Off'}
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => playAudio(sourceId)}
-                            >
-                              ▶
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => pauseAudio(sourceId)}
-                            >
-                              ⏸
-                            </Button>
-                          </>
-                        )}
-                        <Button
-                          variant={muted ? "destructive" : "outline"}
-                          size="sm"
-                          onClick={() => toggleMute(sourceId)}
-                        >
-                          {muted ? 'Unmute' : 'Mute'}
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      {/* 音量スライダー */}
-                      <div className="relative">
-                        <Slider
-                          value={[volume]}
-                          min={0}
-                          max={1}
-                          step={0.01}
-                          disabled={muted}
-                          onValueChange={(values: number[]) => updateAudioVolume(sourceId, values[0])}
-                          className="z-10 relative"
-                        />
-                      </div>
-                      
-                      {/* レベルメーター */}
-                      <div className="h-2 bg-accent rounded-full overflow-hidden">
-                        <div className="relative w-full h-full">
-                          {/* バックグラウンドメーター（ピークホールド） */}
-                          <div 
-                            className="absolute inset-0 transition-all duration-0"
-                            style={{
-                              width: `${(level || 0) * 100}%`,
-                              backgroundColor: `hsl(${120 - (level || 0) * 120}, 100%, 50%)`
-                            }}
-                          />
-                          {/* dBスケール表示 */}
-                          <div className="absolute inset-0 flex justify-between px-1 text-[8px] text-white/50">
-                            <span>-inf</span>
-                            <span>-40</span>
-                            <span>-20</span>
-                            <span>-10</span>
-                            <span>0dB</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* 数値表示 */}
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Level: {Math.round((level || 0) * 100)}%</span>
-                        <span>Volume: {Math.round(volume * 100)}%</span>
-                      </div>
-                    </div>
+            <CardContent className="space-y-4 pb-[20px]">
+              <div className="flex gap-4 items-center">
+                <RadioGroup
+                  defaultValue={resolution}
+                  onValueChange={(value) => handleResolutionChange(value as '720p' | '1080p')}
+                  className="flex items-center space-x-4"
+                  disabled={isStreaming} // RadioGroup全体を無効化
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem 
+                      value="720p" 
+                      id="720p"
+                      disabled={isStreaming} // 個別のアイテムも無効化
+                    />
+                    <Label 
+                      htmlFor="720p" 
+                      className={isStreaming ? "text-muted-foreground" : ""} // 配信中は文字色を薄くする
+                    >
+                      720p
+                    </Label>
                   </div>
-                ))}
-              </ScrollArea>
-            </CardContent>
-          </Card>
-      </div>
-      <Card>
-            <CardContent className="p-4">
-              <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
-                <canvas
-                  ref={canvasRef}
-                  width={getCanvasSize(resolution).width}
-                  height={getCanvasSize(resolution).height}
-                  className="absolute top-0 left-0 w-full h-full"
-                />
-                <canvas
-                  ref={overlayCanvasRef}
-                  width={getCanvasSize(resolution).width}
-                  height={getCanvasSize(resolution).height}
-                  className="absolute top-0 left-0 w-full h-full cursor-move"
-                  onMouseDown={handleCanvasMouseDown}
-                  onMouseMove={(e) => {
-                    handleCanvasMouseMove(e);
-                    updateCursor(e);
-                  }}
-                  onMouseUp={handleCanvasMouseUp}
-                  onMouseLeave={handleCanvasMouseUp}
-                />
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem 
+                      value="1080p" 
+                      id="1080p"
+                      disabled={isStreaming}
+                    />
+                    <Label 
+                      htmlFor="1080p"
+                      className={isStreaming ? "text-muted-foreground" : ""}
+                    >
+                      1080p
+                    </Label>
+                  </div>
+                </RadioGroup>
+                <div className='ml-auto'>
+                {!isStreaming ? (
+                    <Button onClick={startStreaming} disabled={isStreaming}>
+                      配信開始
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={stopStreaming} 
+                      disabled={!isStreaming}
+                      variant="destructive"
+                    >
+                      配信停止
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
-      
+          <Card className="flex-1">
+            <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Sources</CardTitle>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Plus className="h-4 w-4" />
+              </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                <Video className="h-4 w-4 mr-2" />
+                <span>カメラを追加</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  {devices.videoInputs.map(device => (
+                  <DropdownMenuItem 
+                    key={device.deviceId}
+                    onSelect={() => addVideoSource('camera', device.deviceId)}
+                  >
+                    {device.label || `Camera ${device.deviceId}`}
+                  </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                <Mic className="h-4 w-4 mr-2" />
+                <span>マイクを追加</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  {devices.audioInputs.map(device => (
+                  <DropdownMenuItem 
+                    key={device.deviceId}
+                    onSelect={() => addAudioOnlySource(device.deviceId)}
+                  >
+                    {device.label || `Microphone ${device.deviceId}`}
+                  </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+
+              <DropdownMenuItem asChild>
+                <Dialog>
+                <DialogTrigger asChild>
+                  <div className="flex items-center px-2 py-1.5 text-sm">
+                  <Monitor className="h-4 w-4 mr-2" />
+                  <span>画面を追加</span>
+                  </div>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                  <DialogTitle>画面共有の設定</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium">
+                    元のアスペクト比を維持
+                    </label>
+                    <Switch
+                    checked={screenShareSettings.maintainAspectRatio}
+                    onCheckedChange={(checked: boolean) => 
+                      setScreenShareSettings((prev: ScreenShareSettings) => ({
+                      ...prev,
+                      maintainAspectRatio: checked
+                      }))
+                    }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">解像度</label>
+                    <RadioGroup
+                    value={screenShareSettings.resolution}
+                    onValueChange={(value: '720p' | '1080p') =>
+                      setScreenShareSettings(prev => ({
+                      ...prev,
+                      resolution: value
+                      }))
+                    }
+                    className="flex items-center space-x-4"
+                    >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="720p" id="screenshare-720p" />
+                      <Label htmlFor="screenshare-720p">720p</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="1080p" id="screenshare-1080p" />
+                      <Label htmlFor="screenshare-1080p">1080p</Label>
+                    </div>
+                    </RadioGroup>
+                  </div>
+                  <DialogClose asChild>
+                    <Button 
+                    className="w-full" 
+                    onClick={() => {
+                      addVideoSource('screen');
+                    }}
+                    >
+                    画面共有を開始
+                    </Button>
+                  </DialogClose>
+                  </div>
+                </DialogContent>
+                </Dialog>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onSelect={addImageSource}>
+                <ImageIcon className="h-4 w-4 mr-2" />
+                <span>画像を追加</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onSelect={addAudioFileSource}>
+                <Music className="h-4 w-4 mr-2" />
+                <span>音声ファイルを追加</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onSelect={addVideoFile}>
+                <Video className="h-4 w-4 mr-2" />
+                <span>動画ファイルを追加</span>
+              </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            </CardHeader>
+            <CardContent>
+            <ScrollArea className="h-[200px]">
+              {/* 映像ソース */}
+              {videoSources
+              .map((source, index) => (
+                <div 
+                key={source.id} 
+                className={`flex items-center justify-between p-2 rounded-lg mb-2 ${
+                  source.id === selectedSourceId ? 'bg-accent' : 'bg-card'
+                }`}
+                >
+                <div className="flex items-center gap-2">
+                  {source.id.startsWith('camera-') && <Video className="h-4 w-4" />}
+                  {source.id.startsWith('screen-') && <Monitor className="h-4 w-4" />}
+                  {source.id.startsWith('image-') && <ImageIcon className="h-4 w-4" />}
+                  {source.id.startsWith('video-') && <Video className="h-4 w-4" />}
+                  {editingName === source.id ? (
+                  <Input
+                    className="h-6 w-40"
+                    value={source.name}
+                    autoFocus
+                    onChange={(e) => renameSource(source.id, e.target.value)}
+                    onBlur={() => setEditingName(null)}
+                    onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setEditingName(null);
+                    }
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  ) : (
+                  <span 
+                    className="cursor-pointer hover:bg-accent/50 px-2 py-1 rounded min-w-[160px]"
+                    onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingName(source.id);
+                    }}
+                  >
+                    {source.name}
+                  </span>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  {(source.id.startsWith('video-') || source.isAnimated) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => toggleVideoLoop(source.id)}
+                  >
+                    {source.loop ? 'Loop: On' : 'Loop: Off'}
+                  </Button>
+                  )}
+                  <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleCropping(source.id)}
+                  >
+                  <Scissors className="h-4 w-4" />
+                  </Button>
+                  <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => moveSourceLayer(source.id, 'up')}
+                  disabled={index === 0}
+                  >
+                  ↑
+                  </Button>
+                  <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => moveSourceLayer(source.id, 'down')}
+                  disabled={index === videoSources.length - 1}
+                  >
+                  ↓
+                  </Button>
+                  <Button
+                  size="icon"
+                  variant="destructive"
+                  onClick={() => removeSource(source.id)}
+                  >
+                  ×
+                  </Button>
+                </div>
+                </div>
+              ))}
+
+              {/* 音声ソース */}
+              {Object.entries(audioSources)
+              .filter(([id]) => !id.startsWith('screen-'))
+              .map(([sourceId, source]) => (
+                <div 
+                key={sourceId}
+                className="flex items-center justify-between p-2 rounded-lg mb-2 bg-card"
+                >
+                <div className="flex items-center gap-2">
+                  {source.type === 'mic' && <Mic className="h-4 w-4" />}
+                  {source.type === 'audio' && <Music className="h-4 w-4" />}
+                  {editingName === sourceId ? (
+                  <Input
+                    className="h-6 w-40"
+                    value={source.name}
+                    autoFocus
+                    onChange={(e) => renameSource(sourceId, e.target.value)}
+                    onBlur={() => setEditingName(null)}
+                    onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setEditingName(null);
+                    }
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  ) : (
+                  <span 
+                    className="cursor-pointer hover:bg-accent/50 px-2 py-1 rounded min-w-[160px]"
+                    onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingName(sourceId);
+                    }}
+                  >
+                    {source.name}
+                  </span>
+                  )}
+                </div>
+                <Button
+                  size="icon"
+                  variant="destructive"
+                  onClick={() => removeSource(sourceId)}
+                >
+                  ×
+                </Button>
+                </div>
+              ))}
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+            </CardContent>
+          </Card>
+
+          <Card className="flex-1">
+            <CardHeader>
+            <CardTitle>Audio Mixer</CardTitle>
+            </CardHeader>
+            <CardContent>
+            <ScrollArea className="h-[200px]">
+              {Object.entries(audioSources).map(([sourceId, { volume, muted, loop, level }]) => (
+              <div key={sourceId} className="space-y-2 mb-4">
+                <div className="flex items-center justify-between">
+                <span className="text-sm">
+                  {audioSources[sourceId].name}
+                </span>
+                <div className="flex gap-2">
+                  {sourceId.startsWith('audio-') && (
+                  <>
+                    <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => toggleLoop(sourceId)}
+                    >
+                    {loop ? 'Loop: On' : 'Loop: Off'}
+                    </Button>
+                    <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => playAudio(sourceId)}
+                    >
+                    ▶
+                    </Button>
+                    <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => pauseAudio(sourceId)}
+                    >
+                    ⏸
+                    </Button>
+                  </>
+                  )}
+                  <Button
+                  variant={muted ? "destructive" : "outline"}
+                  size="sm"
+                  onClick={() => toggleMute(sourceId)}
+                  >
+                  {muted ? 'Unmute' : 'Mute'}
+                  </Button>
+                </div>
+                </div>
+                <div className="space-y-1">
+                <div className="relative">
+                  <Slider
+                  value={[volume]}
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  disabled={muted}
+                  onValueChange={(values: number[]) => updateAudioVolume(sourceId, values[0])}
+                  className="z-10 relative"
+                  />
+                </div>
+                <div className="h-2 bg-accent rounded-full overflow-hidden">
+                  <div className="relative w-full h-full">
+                  <div 
+                    className="absolute inset-0 transition-all duration-0"
+                    style={{
+                    width: `${(level || 0) * 100}%`,
+                    backgroundColor: `hsl(${120 - (level || 0) * 120}, 100%, 50%)`
+                    }}
+                  />
+                  <div className="absolute inset-0 flex justify-between px-1 text-[8px] text-white/50">
+                    <span>-inf</span>
+                    <span>-40</span>
+                    <span>-20</span>
+                    <span>-10</span>
+                    <span>0dB</span>
+                  </div>
+                  </div>
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Level: {Math.round((level || 0) * 100)}%</span>
+                  <span>Volume: {Math.round(volume * 100)}%</span>
+                </div>
+                </div>
+              </div>
+              ))}
+            </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
+        <Card className='flex items-center'>
+          <CardContent className="p-4 w-full">
+            <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+              <canvas
+                ref={canvasRef}
+                width={getCanvasSize(resolution).width}
+                height={getCanvasSize(resolution).height}
+                className="absolute top-0 left-0 w-full h-full"
+              />
+              <canvas
+                ref={overlayCanvasRef}
+                width={getCanvasSize(resolution).width}
+                height={getCanvasSize(resolution).height}
+                className="absolute top-0 left-0 w-full h-full cursor-move"
+                onMouseDown={handleCanvasMouseDown}
+                onMouseMove={(e) => {
+                  handleCanvasMouseMove(e);
+                  updateCursor(e);
+                }}
+                onMouseUp={handleCanvasMouseUp}
+                onMouseLeave={handleCanvasMouseUp}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <Card className='p-1'>
+        <div className='flex px-2 items-center'>
+          <p className='text-gray-500 font-semibold'>配信中はBrowserEncoderのタブを閉じないでください。配信が停止する可能性があります。</p>
+          <p className='ml-auto text-sm'>StreamKey:{streamKey}</p>
+        </div>
+      </Card>  
     </div>
   );
 }
