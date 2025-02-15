@@ -73,34 +73,50 @@ export default function Chat(props: ChatProps) {
   };
 
   return (
-    <div className="w-[100%] h-[600px] bg-[White] rounded-[10px] border-[1px] mb-[10px]">
-      <div className="h-[40px] text-center border-b-[1px]">
-        <p className=" pt-2">チャット</p>
+    <div className="w-full min-h-[600px] bg-white rounded-lg border flex flex-col">
+      <div className="h-10 border-b">
+        <p className="pt-2 text-center">チャット</p>
       </div>
-      <div className="h-[80%] bg-[#ffffff] overflow-y-scroll flex flex-col-reverse">
-      {messages.map((message, index) => (
-          <div className="m-1 flex items-center chat-message" key={index}>
-            <img src={message.image} className='w-[20px] h-[20px] object-cover rounded-full mr-1'></img>
-            <span className='mr-[10px] text-[grey] text-[14px] shrink-0 break-keep chat-message-name max-w-[40%] text-ellipsis-1'>{message.name}</span>
-            <span className='text-[16px] chat-message-text'> {message.text}</span>
+      
+      <div className="flex-1 bg-white overflow-y-auto flex flex-col-reverse">
+        {messages.map((message, index) => (
+          <div className="m-1 flex items-center" key={index}>
+            <img 
+              src={message.image} 
+              className="w-5 h-5 object-cover rounded-full mr-1" 
+              alt={message.name}
+            />
+            <span className="mr-2 text-gray-500 text-sm truncate max-w-[40%]">
+              {message.name}
+            </span>
+            <span className="text-base">
+              {message.text}
+            </span>
           </div>
-      ))}
+        ))}
+        
         {is_connection && (
-          <p className="text-[#5f5f5f] m-[10px] chat-status">チャットに接続しました</p>
+          <p className="text-gray-600 m-2">
+            チャットに接続しました
+          </p>
         )}
       </div>
-      <form onSubmit={handleSubmit}>
-        <div className="flex justify-center w-[100%] items-center">
+
+      <form onSubmit={handleSubmit} className="p-2 border-t">
+        <div className="flex items-center gap-2">
           <input
             type="text"
             id="msg"
             autoComplete="off"
             value={msg}
             onChange={(e) => setMsg(e.target.value)}
-            className="w-full ml-[10px] my-[10px] block border-solid divide-inherit border-2 rounded-md	h-[30px]"
+            className="flex-1 max-h-[30px] px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <button type="submit" className="w-[40px] h-[40px] p-1 pr-3 ml-2">
-            <Send className="m-auto" size={24} />
+          <button 
+            type="submit" 
+            className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full"
+          >
+            <Send size={24} />
           </button>
         </div>
       </form>
