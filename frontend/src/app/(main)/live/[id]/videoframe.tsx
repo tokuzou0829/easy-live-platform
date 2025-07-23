@@ -30,7 +30,7 @@ export default function Videoflame(props: Flameprops) {
         {status == "online" ? (
           <Video id={live.stream_key} />
         ) : (
-          <div className="relative w-[100%] aspect-video" style={{ backgroundImage: `url(https://live-platform-api.tokuzou.me/thumbnail?id=${live.stream_key})` ,backgroundSize: "cover"}}>
+          <div className="relative w-[100%] aspect-video" style={{ backgroundImage: `url(${process.env.NEXT_PUBLIC_THUMBNAIL_URL}?id=${live.stream_key})` ,backgroundSize: "cover"}}>
             <div
               style={{
                 position: "absolute",

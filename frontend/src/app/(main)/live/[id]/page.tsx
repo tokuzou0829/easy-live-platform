@@ -12,15 +12,15 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     keywords: ["ライブ配信"],
     twitter: {
       card: "summary_large_image",
-      images: ["https://live-platform.tokuzou.me/api/og?video_id=" + params.id],
+      images: [`${process.env.NEXT_PUBLIC_BASE_URL}/api/og?video_id=` + params.id],
     },
     openGraph: {
       title: live.title,
       description: live.overview,
-      url: "https://live-platform.tokuzou.me/live/" + params.id,
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/live/` + params.id,
       siteName: "Live Platform",
       images: {
-        url: "https://live-platform.tokuzou.me/api/og?video_id=" + params.id,
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/og?video_id=` + params.id,
         width: 1200,
         height: 630,
       },

@@ -10,7 +10,6 @@ import { promisify } from 'util'
 import { showRoutes } from 'hono/dev'
 
 const app = new Hono()
-const port = 3006
 
 // Cache time (milliseconds)
 const cacheTime = 60 * 1000
@@ -31,12 +30,12 @@ const querySchema = z.object({
 // Promisify exec
 const execAsync = promisify(exec)
 
-app.get('/thumbnail', zValidator('query', querySchema), async (c) => {
+app.get('/api/thumbnail', zValidator('query', querySchema), async (c) => {
   try {
     const { id, size } = c.req.valid('query')
-    const response = await fetch(`http://localhost:4001/streams/${id}`, { method: 'GET' })
+    const response = await fetch(`http://main-backend:3001/streams/${id}`, { method: 'GET' })
     if (!response.ok) {
-      console.log(resdata.error)
+      console.log(response.statusText)
       return c.text('ID Not Found', 400)
     }
     console.log("live is online")
@@ -63,7 +62,7 @@ app.get('/thumbnail', zValidator('query', querySchema), async (c) => {
     }
 
     // `large`サムネイルが存在しない場合、生成
-    const url = `https://live-platform-api.tokuzou.me/hls-sub/${id}/index.m3u8`
+    const url = `http://nginx-rtmp/hls/${id}/index.m3u8`
     const ffmpegCommand = `ffmpeg -i "${url}" -vf "thumbnail,scale=-1:1080" -vframes 1 -q:v 2 ${largeThumbnailFile}`
     console.log("start exec")
 
@@ -111,6 +110,6 @@ async function generateThumbnail(size, largeThumbnailFile, thumbnailFile, c) {
 
 serve({
   fetch: app.fetch,
-  port: 4002,
+  port: 3003,
 })
 showRoutes(app)

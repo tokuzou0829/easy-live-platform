@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+  # Nginx with RTMP module for live streaming
+  nginx-rtmp:
+    build:
+      context: ./docker/nginx-rtmp
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"        # メインWebアクセス
+      - "1935:1935"    # RTMP配信
+      - "8080:8080"    # HLS/統計ページ
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+    volumes:
+      - hls_data:/var/www/html/hls
+    depends_on:
+      - frontend
+      - main-backend
+      - chat-backend
+      - thumbnail-gen
+    networks:
+      - live-platform-network
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXTAUTH_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
+        - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-nextauth-secret-change-this}
+        - NEXT_PUBLIC_API_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/api
+        - NEXT_PUBLIC_CHAT_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
+        - NEXT_PUBLIC_HLS_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/hls
+        - NEXT_PUBLIC_RTMP_URL=rtmp://${DOMAIN:-localhost}:1935/live
+        - NEXT_PUBLIC_THUMBNAIL_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/api/thumbnail
+        - NEXT_PUBLIC_WEBSOCKET_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
+        - NEXT_PUBLIC_BASE_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
+        - AUTH_GITHUB_ID=${AUTH_GITHUB_ID:-your-github-client-id}
+        - AUTH_GITHUB_SECRET=${AUTH_GITHUB_SECRET:-your-github-client-secret}
+    environment:
+      - NODE_ENV=production
+      - NEXTAUTH_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-nextauth-secret-change-this}
+      - NEXT_PUBLIC_API_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/api
+      - SERVER_API_URL=http://main-backend:3001
+      - NEXT_PUBLIC_CHAT_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
+      - NEXT_PUBLIC_HLS_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/hls
+      - NEXT_PUBLIC_RTMP_URL=rtmp://${DOMAIN:-localhost}:1935/live
+      - NEXT_PUBLIC_THUMBNAIL_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/api/thumbnail
+      - NEXT_PUBLIC_WEBSOCKET_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
+      - NEXT_PUBLIC_BASE_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    expose:
+      - "3000"
+    depends_on:
+      - main-backend
+      - chat-backend
+      - thumbnail-gen
+    networks:
+      - live-platform-network
+
+  # Main backend (API + Thumbnail generation)
+  main-backend:
+    build:
+      context: ./backend/main
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DOMAIN=${DOMAIN:-localhost}
+    volumes:
+      - ./backend/main:/app
+      - /app/node_modules
+      - db_data:/app/data
+    expose:
+      - "3001"
+    networks:
+      - live-platform-network
+
+  # Chat backend (Socket.io)
+  chat-backend:
+    build:
+      context: ./backend/chat-socket
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - DOMAIN=${DOMAIN:-localhost}
+    volumes:
+      - ./backend/chat-socket:/app
+      - /app/node_modules
+    expose:
+      - "3002"
+    networks:
+      - live-platform-network
+
+  # Thumbnail generation service
+  thumbnail-gen:
+    build:
+      context: ./backend/thumbnail-gen
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+      - DOMAIN=${DOMAIN:-localhost}
+    volumes:
+      - ./backend/thumbnail-gen:/app
+      - /app/node_modules
+    expose:
+      - "3003"
+    networks:
+      - live-platform-network
+
+volumes:
+  hls_data:
+  db_data:
+
+networks:
+  live-platform-network:
+    driver: bridge

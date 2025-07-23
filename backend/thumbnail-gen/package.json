@@ -1,0 +1,23 @@
+{
+  "name": "live-platform-thumbnail-gen",
+  "version": "1.0.0",
+  "description": "",
+  "main": "thumbnail.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hono/node-server": "^1.12.0",
+    "@hono/zod-validator": "^0.2.2",
+    "express": "^4.19.2",
+    "hono": "^4.5.1",
+    "sharp": "^0.33.4",
+    "zod": "^3.23.8"
+  }
+}

@@ -29,7 +29,7 @@ export async function GET(req: NextRequest): Promise<Response | ImageResponse> {
         >
           <img
             style={{ height: "100%", width: "100%", objectFit: "cover" }}
-            src={live.status == "online" ? `https://live-platform-api.tokuzou.me/thumbnail?id=${live.stream_key}` : 'https://live-platform.tokuzou.me/no_image_logo.png'}
+            src={live.status == "online" ? `${process.env.NEXT_PUBLIC_THUMBNAIL_URL}?id=${live.stream_key}` : `${process.env.NEXT_PUBLIC_BASE_URL}/no_image_logo.png`}
           />
         </div>
       ),

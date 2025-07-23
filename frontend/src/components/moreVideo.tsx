@@ -14,7 +14,7 @@ export async function MoreVideo({stream}:{stream :Live}) {
                             <div key={index}>
                                 <Link href={`/live/${video.stream_key}`}>
                                     <div className="flex items-center my-[5px]">
-                                        <img className="object-cover w-[140px] aspect-video rounded" src={`https://live-platform-api.tokuzou.me/thumbnail?id=${video.stream_key}`}></img>
+                                        <img className="object-cover w-[140px] aspect-video rounded" src={`${process.env.NEXT_PUBLIC_THUMBNAIL_URL}?id=${video.stream_key}`}></img>
                                         <div className="ml-2 mr-2">
                                             <span className="text-ellipsis-2">{video.title}</span>
                                         </div>

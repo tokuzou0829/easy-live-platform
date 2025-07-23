@@ -48,6 +48,7 @@ app.get("/chat-auth/health", async (req, res) => {
   return res.status(200).json({health:"ok"});
 });
 
-http.listen(4003, () => {
-  console.log("success listen 4003");
+const PORT = process.env.PORT || 3002;
+http.listen(PORT, () => {
+  console.log(`Chat server listening on port ${PORT}`);
 });

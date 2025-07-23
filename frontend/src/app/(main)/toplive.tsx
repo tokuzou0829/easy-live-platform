@@ -67,12 +67,12 @@ function TopLive(props: LiveProps) {
       {lives.map((option, index) => (
         <Option
           key={index}
-          image={`https://live-platform-api.tokuzou.me/thumbnail?id=${option.stream_key}`}
+          image={`${process.env.NEXT_PUBLIC_THUMBNAIL_URL}?id=${option.stream_key}`}
           sub={option.title}
           video_id={option.stream_key}
           active={index === activeOption}
           onClick={() => handleOptionClick(index)}
-          style={{ "--optionBackground": `url(https://live-platform-api.tokuzou.me/thumbnail?id=${option.stream_key})` }}
+          style={{ "--optionBackground": `url(${process.env.NEXT_PUBLIC_THUMBNAIL_URL}?id=${option.stream_key})` }}
         />
       ))}
       <div className=" shrink-0">

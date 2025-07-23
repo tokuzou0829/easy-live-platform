@@ -18,11 +18,19 @@ app.use(cors({
 }));
 app.use(express.urlencoded({ extended: true }));
 
+import fs from 'fs';
+
 // SQLite設定
 let db;
 (async () => {
+    // データディレクトリを作成
+    const dataDir = path.join(__dirname, 'data');
+    if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+    }
+    
     db = await open({
-        filename: path.join(__dirname, 'live_platform.db'),
+        filename: path.join(dataDir, 'live_platform.db'),
         driver: sqlite3.Database
     });
 
@@ -162,7 +170,7 @@ app.post('/stream_end', async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 4001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

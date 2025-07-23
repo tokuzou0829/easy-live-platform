@@ -67,9 +67,20 @@ async function http<T>(
   config: RequestInit,
   validateStatus?: (status: number) => boolean
 ): Promise<T> {
-  // biome-ignore lint/style/noNonNullAssertion: <explanation>
+  // サーバーサイドかクライアントサイドかを判定
+  const isServer = typeof window === 'undefined';
+  // サーバーサイドでは内部URL、クライアントサイドでは外部URLを使用
+  // SERVER_API_URLが未設定の場合はNEXT_PUBLIC_API_URLをフォールバックとして使用
+  const baseURL = isServer 
+    ? (process.env.SERVER_API_URL || process.env.NEXT_PUBLIC_API_URL)
+    : process.env.NEXT_PUBLIC_API_URL;
+  
+  if (!baseURL) {
+    throw new Error('API_URLが設定されていません');
+  }
+  
   const request = new Request(
-    buildFullPath(process.env.NEXT_PUBLIC_API_ROOT!, path),
+    buildFullPath(baseURL, path),
     config
   );
 

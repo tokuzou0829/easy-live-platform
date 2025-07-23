@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: "%s | Live Platform",
     absolute: "Live Platform",
   },
-  metadataBase: new URL("htttps://live-platform.tokuzou.me"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost"),
   description: "誰でもすぐにライブ配信を",
   robots: {
     index: false,

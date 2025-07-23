@@ -67,6 +67,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     CustomOAuthProvider,
   ],
+  trustHost: true,
   callbacks: {
     async jwt({ token,user,account,session}): Promise<JWT | null> {
       if(account && user){

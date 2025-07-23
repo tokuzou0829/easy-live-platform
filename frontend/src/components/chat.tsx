@@ -28,34 +28,43 @@ export default function Chat(props: ChatProps) {
   const [token, setToken] = useState<string | null | undefined>(null);;
 
   useEffect(() => {
-    const socket = io('https://live-platform-api.tokuzou.me', {
-      path: '/chat/socket.io/',
-    });
-    setSocket(socket);
-    async function connectChat(){
-      const roomId = id;
-      if (session?.user) {
-        const name = session.user.name;
-        setUrlName(name);
-        setToken(token);
-        socket.emit("join", { roomId: roomId, name: name, image: session.user.image });
-        setIs_connection(true);
-      } else {
-        setUrlName("guest");
-        socket.on("connect", () => {
-          socket.emit("join", { roomId: roomId, name: "ゲスト", image: "https://live-platform.tokuzou.me/no_image_logo.png" });
-          setIs_connection(true);
-        });
-      }
-      socket.on("message", (msg) => {
-        setMessages((prevMessages) => [msg, ...prevMessages]);
+    const roomId = id;
+    if (roomId) {
+      console.log("joining room: " + roomId)
+      // サーバー側では内部URL、クライアント側では外部URLを使用
+      const socketUrl = typeof window === 'undefined' 
+        ? 'http://chat-backend:3002' 
+        : process.env.NEXT_PUBLIC_CHAT_URL;
+      
+      const socket = io(socketUrl, {
+        transports: ['websocket'],
+        upgrade: true,
       });
-    }
-    connectChat();
+      setSocket(socket);
+    
+      const connectChat = async () => {
+        if (session?.user) {
+          const name = session.user.name;
+          setUrlName(name);
+          socket.emit("join", { roomId: roomId, name: name, image: session.user.image });
+          setIs_connection(true);
+        } else {
+          setUrlName("guest");
+          socket.on("connect", () => {
+            socket.emit("join", { roomId: roomId, name: "ゲスト", image: process.env.NEXT_PUBLIC_BASE_URL + "/no_image_logo.png" });
+            setIs_connection(true);
+          });
+        }
+        socket.on("message", (msg) => {
+          setMessages((prevMessages) => [msg, ...prevMessages]);
+        });
+      };
+      connectChat();
 
-    return () => {
-      socket.disconnect();
-    };
+      return () => {
+        socket.disconnect();
+      };
+    }
   }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

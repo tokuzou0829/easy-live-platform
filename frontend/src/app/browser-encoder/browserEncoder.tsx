@@ -1251,7 +1251,7 @@ const updateCursor = (e: React.MouseEvent<HTMLCanvasElement>) => {
       const stream = await startCamera();
       currentStreamRef.current = stream;
       
-      wsConnectionRef.current = new WebSocket(`wss://live-platform-api.tokuzou.me/stream/${streamKey}?password=${localStorage.getItem('stream_access_key')}`);
+      wsConnectionRef.current = new WebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/stream/${streamKey}?password=${localStorage.getItem('stream_access_key')}`);
       
       wsConnectionRef.current.onopen = () => {
         const recorder = createMediaRecorder(stream);

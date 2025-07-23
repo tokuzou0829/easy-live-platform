@@ -201,7 +201,7 @@ function Player(props: VideoProps) {
 
   useEffect(() => {
     let hls: Hls; // HLS.js インスタンスを保持する変数を定義
-    const videoSrc = `https://live-platform-api.tokuzou.me/hls-sub/${id}/index.m3u8`;
+    const videoSrc = `${process.env.NEXT_PUBLIC_BASE_URL}/hls/${id}/index.m3u8`;
 
     // Function to check the m3u8 file status
     const checkM3u8Status = () => {
@@ -281,7 +281,7 @@ function Player(props: VideoProps) {
                   ref={LinkText}
                   className="hidden"
                   readOnly
-                  value={"https://live-platform.tokuzou.me/live/" + id}
+                  value={`${process.env.NEXT_PUBLIC_BASE_URL}/live/` + id}
                 />
                 <div className="flex items-center">
                   <button

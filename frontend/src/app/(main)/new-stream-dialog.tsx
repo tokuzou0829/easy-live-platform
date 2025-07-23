@@ -39,7 +39,8 @@ export function NewStreamDialog({ isCollapsed }: { isCollapsed: boolean }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch("https://live-platform-api.tokuzou.me/streams", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const response = await fetch(`${apiUrl}/streams`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -122,7 +123,7 @@ export function NewStreamDialog({ isCollapsed }: { isCollapsed: boolean }) {
               <div className="space-y-2">
                 <p>ストリームURL:</p>
                 <code className="block p-2 bg-gray-100 rounded">
-                  rtmp://rtmp.live-platform.tokuzou.me/lptlive2?password={streamData.stream_access_key}
+                  {process.env.NEXT_PUBLIC_RTMP_URL}?password={streamData.stream_access_key}
                 </code>
               </div>
               <div className="space-y-2">
