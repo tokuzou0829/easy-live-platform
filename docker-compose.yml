@@ -33,7 +33,7 @@ services:
         - NEXT_PUBLIC_API_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/api
         - NEXT_PUBLIC_CHAT_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
         - NEXT_PUBLIC_HLS_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/hls
-        - NEXT_PUBLIC_RTMP_URL=rtmp://${DOMAIN:-localhost}:1935/live
+        - NEXT_PUBLIC_RTMP_URL=${NEXT_PUBLIC_RTMP_URL:-localhost}
         - NEXT_PUBLIC_THUMBNAIL_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/api/thumbnail
         - NEXT_PUBLIC_WEBSOCKET_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
         - NEXT_PUBLIC_BASE_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
@@ -47,7 +47,7 @@ services:
       - SERVER_API_URL=http://main-backend:3001
       - NEXT_PUBLIC_CHAT_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
       - NEXT_PUBLIC_HLS_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/hls
-      - NEXT_PUBLIC_RTMP_URL=rtmp://${DOMAIN:-localhost}:1935/live
+      - NEXT_PUBLIC_RTMP_URL=${NEXT_PUBLIC_RTMP_URL:-localhost}
       - NEXT_PUBLIC_THUMBNAIL_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/api/thumbnail
       - NEXT_PUBLIC_WEBSOCKET_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
       - NEXT_PUBLIC_BASE_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
