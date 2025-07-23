@@ -1,5 +1,5 @@
 "use server";
-import BrowserEncoder from "./browserEncoder";
+import BrowserEncoder from "./browseEncoder";
 import { getLive } from "@/requests/live";
 import { auth } from "@/auth";
 

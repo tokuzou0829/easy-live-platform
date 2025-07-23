@@ -19,6 +19,7 @@ services:
       - main-backend
       - chat-backend
       - thumbnail-gen
+      - browser-encoder
     networks:
       - live-platform-network
 
@@ -35,7 +36,7 @@ services:
         - NEXT_PUBLIC_HLS_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/hls
         - NEXT_PUBLIC_RTMP_URL=${NEXT_PUBLIC_RTMP_URL:-localhost}
         - NEXT_PUBLIC_THUMBNAIL_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/api/thumbnail
-        - NEXT_PUBLIC_WEBSOCKET_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
+        - NEXT_PUBLIC_WEBSOCKET_URL=${NEXT_PUBLIC_WEBSOCKET_URL:-localhost}
         - NEXT_PUBLIC_BASE_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
         - AUTH_GITHUB_ID=${AUTH_GITHUB_ID:-your-github-client-id}
         - AUTH_GITHUB_SECRET=${AUTH_GITHUB_SECRET:-your-github-client-secret}
@@ -49,7 +50,7 @@ services:
       - NEXT_PUBLIC_HLS_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/hls
       - NEXT_PUBLIC_RTMP_URL=${NEXT_PUBLIC_RTMP_URL:-localhost}
       - NEXT_PUBLIC_THUMBNAIL_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}/api/thumbnail
-      - NEXT_PUBLIC_WEBSOCKET_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
+      - NEXT_PUBLIC_WEBSOCKET_URL=${NEXT_PUBLIC_WEBSOCKET_URL:-localhost}
       - NEXT_PUBLIC_BASE_URL=${PROTOCOL:-http}://${DOMAIN:-localhost}
     volumes:
       - ./frontend:/app
@@ -61,6 +62,7 @@ services:
       - main-backend
       - chat-backend
       - thumbnail-gen
+      - browser-encoder
     networks:
       - live-platform-network
 
@@ -113,6 +115,21 @@ services:
       - /app/node_modules
     expose:
       - "3003"
+    networks:
+      - live-platform-network
+
+  browser-encoder:
+    build:
+      context: ./backend/browser-encoder
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DOMAIN=${DOMAIN:-localhost}
+    volumes:
+      - /app/node_modules
+    expose:
+      - "3000"
     networks:
       - live-platform-network
 
