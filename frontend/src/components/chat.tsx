@@ -87,7 +87,7 @@ export default function Chat(props: ChatProps) {
         <p className="pt-2 text-center">チャット</p>
       </div>
       
-      <div className="flex-1 bg-white overflow-y-auto flex flex-col-reverse">
+      <div className="flex-1 bg-white overflow-y-auto flex flex-col-reverse max-h-[500px]">
         {messages.map((message, index) => (
           <div className="m-1 flex items-center" key={index}>
             <img 
