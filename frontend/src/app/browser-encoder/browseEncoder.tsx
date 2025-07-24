@@ -25,6 +25,7 @@ export default function BrowserEncoder({
 }) {
   const searchParams = useSearchParams();
   const [streamKey, setStreamKey] = useState(searchParams.get('stream_key') || '');
+  const [streamAccessKey, setStreamAccessKey] = useState('');
   const [devices, setDevices] = useState<{
     audioInputs: MediaDeviceInfo[];
     videoInputs: MediaDeviceInfo[];
@@ -91,6 +92,14 @@ export default function BrowserEncoder({
     mainGainNodeRef
   } = useAudioMixer();
 
+  // Safely get stream access key from localStorage on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const accessKey = localStorage.getItem('stream_access_key') ?? '';
+      setStreamAccessKey(accessKey);
+    }
+  }, []);
+
   const {
     isStreaming,
     startStreaming,
@@ -99,7 +108,7 @@ export default function BrowserEncoder({
     activeRecorderRef
   } = useStreamControl({
     streamKey,
-    ch_pass: localStorage.getItem('stream_access_key') ?? '',
+    ch_pass: streamAccessKey,
     videoSourcesRef,
     mainGainNodeRef
   });
@@ -199,25 +208,16 @@ export default function BrowserEncoder({
   };
 
   const handleRemoveSource = (sourceId: string) => {
-    // First, check if this is a screen share source
-    const isScreenShare = sourceId.startsWith('screen-');
-    
-    // Remove audio source first if it exists
-    if (sourceId.startsWith('audio-') || sourceId.startsWith('mic-') || isScreenShare) {
+    // Remove audio source first if it exists (exact match or direct relation)
+    if (sourceId.startsWith('audio-') || sourceId.startsWith('mic-')) {
       removeAudioSource(sourceId);
-      
-      // For screen share, also check for any related audio sources that might have the same prefix
-      if (isScreenShare) {
-        Object.keys(audioSources).forEach(audioId => {
-          if (audioId.startsWith(sourceId) || 
-              (audioId.startsWith('screen-') && sourceId.startsWith('screen-'))) {
-            removeAudioSource(audioId);
-          }
-        });
-      }
     }
     
-    // Then remove the video source
+    // For video sources (including screen share), let the video source removal 
+    // handle the audio cleanup through the custom event system
+    // This prevents duplicate audio removal logic
+    
+    // Remove the video source (this will trigger the custom event)
     removeSource(sourceId);
   };
 

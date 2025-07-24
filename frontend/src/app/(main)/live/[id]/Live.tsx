@@ -26,7 +26,9 @@ export default async function LivePlayer({ id }: LiveProps) {
         </div>
         <div className="p-[10px] xl:min-w-[430px] max-w-[100%] xl:max-w-[430px] xl:pr-[20px]">
           <div>
-            <Chat id={live.id} session={session}></Chat>
+            <div className="min-h-[600px] mb-4">
+              <Chat id={live.id} session={session}></Chat>
+            </div>
             <MoreVideo stream={live}></MoreVideo>
           </div>
         </div>

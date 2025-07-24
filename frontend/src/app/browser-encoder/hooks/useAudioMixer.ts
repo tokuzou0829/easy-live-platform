@@ -224,16 +224,15 @@ export const useAudioMixer = () => {
       const { sourceId } = event.detail;
       console.log(`Video source removed event received: ${sourceId}`);
       
-      // Remove the corresponding audio source if it exists
+      // Remove the corresponding audio source if it exists (exact match)
       if (audioSources[sourceId]) {
         removeAudioSource(sourceId);
       }
       
-      // Also check for any audio sources that might be related to this video source
-      // For example, screen share audio sources
+      // Only remove audio sources that are directly related to this specific video source
+      // Check for audio sources that start with the exact sourceId (e.g., "screen-123456" matches "screen-123456-audio")
       Object.keys(audioSources).forEach(audioId => {
-        if (audioId.startsWith(sourceId) || 
-            (sourceId.startsWith('screen-') && audioId.startsWith('screen-'))) {
+        if (audioId.startsWith(sourceId + '-') || audioId === sourceId) {
           removeAudioSource(audioId);
         }
       });

@@ -18,7 +18,7 @@ type ChatMessage = {
   text: string;
 };
   
-export default function Chat(props: ChatProps) {
+const Chat = React.forwardRef<HTMLDivElement, ChatProps>((props, ref) => {
   const { id, session } = props;
   const [socket, setSocket] = useState<Socket | null>(null); // Type the socket
   const [msg, setMsg] = useState('');
@@ -82,12 +82,12 @@ export default function Chat(props: ChatProps) {
   };
 
   return (
-    <div className="w-full min-h-[600px] bg-white rounded-lg border flex flex-col">
+    <div ref={ref} className="w-full min-h-[600px] bg-white rounded-lg border flex flex-col">
       <div className="h-10 border-b">
         <p className="pt-2 text-center">チャット</p>
       </div>
       
-      <div className="flex-1 bg-white overflow-y-auto flex flex-col-reverse max-h-[500px]">
+      <div className="flex-1 bg-white overflow-y-auto flex flex-col-reverse">
         {messages.map((message, index) => (
           <div className="m-1 flex items-center" key={index}>
             <img 
@@ -131,4 +131,8 @@ export default function Chat(props: ChatProps) {
       </form>
     </div>
   );
-}
+});
+
+Chat.displayName = 'Chat';
+
+export default Chat;
